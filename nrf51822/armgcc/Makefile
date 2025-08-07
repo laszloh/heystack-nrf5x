@@ -1,5 +1,5 @@
 PROJECT_NAME     := ble_app_haystack_$(SOFTDEVICE_MODEL)
-TARGETS          := nrf51822_xxac nrf51822_xxac-dcdc
+TARGETS          := nrf51822_xxaa nrf51822_xxac nrf51822_xxac-dcdc
 OUTPUT_DIRECTORY := _build
 
 NRF_ROOT := ../..
@@ -14,7 +14,10 @@ SOFTDEVICE_VERSION := 2.0.1
 $(OUTPUT_DIRECTORY)/nrf51822_xxac.out: \
   LINKER_SCRIPT  := ble_app_haystack_gcc_nrf51.ld
 
-  $(OUTPUT_DIRECTORY)/nrf51822_xxac-dcdc.out: \
+$(OUTPUT_DIRECTORY)/nrf51822_xxaa.out: \
+  LINKER_SCRIPT  := ble_app_haystack_gcc_nrf51.ld
+
+$(OUTPUT_DIRECTORY)/nrf51822_xxac-dcdc.out: \
   LINKER_SCRIPT  := ble_app_haystack_gcc_nrf51.ld
 
 ifeq ($(HAS_BATTERY), 1)

@@ -1,17 +1,18 @@
 .PHONY: all help
 
 HAS_DEBUG ?= 0
-HAS_BATTERY ?= 0
+HAS_BATTERY ?= 1
 MAX_KEYS ?= 500
 KEY_ROTATION_INTERVAL ?= 3600
 ADVERTISING_INTERVAL ?= 1000
 RANDOM_ROTATE_KEYS ?= 1
 
-GNU_INSTALL_ROOT ?= $(CURDIR)/nrf-sdk/gcc-arm-none-eabi-6-2017-q2-update
+GNU_INSTALL_ROOT ?= $(CURDIR)/nrf-sdk/gcc-arm-none-eabi
 
 
 TARGETS := \
 	nrf51822_xxac \
+	nrf51822_xxaa \
 	nrf51822_xxac-dcdc \
 	nrf52810_xxaa \
 	nrf52810_xxaa-dcdc \
