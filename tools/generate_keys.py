@@ -31,17 +31,15 @@ TEMPLATE = Template('{'
                     '\"additionalKeys\": [$additionalKeys]'
                     '}')
 
-
 def int_to_bytes(n, length, endianess='big'):
     h = '%x' % n
     s = ('0'*(len(h) % 2) + h).zfill(length*2).decode('hex')
     return s if endianess == 'big' else s[::-1]
 
-
-def to_C_byte_array(adv_key, isV3):
+def to_C_byte_array(adv_key):
     out = '{'
     for element in range(0, len(adv_key)):
-        e = adv_key[element] if isV3 else ord(adv_key[element])
+        e = adv_key[element]
         out = out + "0x{:02x}".format(e)
         if element != len(adv_key)-1:
             out = out + ','
@@ -64,19 +62,10 @@ parser.add_argument(
     '-y', '--yaml', help='yaml file where to write the list of generated keys')
 parser.add_argument(
     '-v', '--verbose', help='print keys as they are generated', action="store_true")
-parser.add_argument(
-
-    '-tinfs', '--thisisnotforstalking', help=argparse.SUPPRESS)   
 
 args = parser.parse_args()
 
-MAX_KEYS = 250
-
-if (args.thisisnotforstalking == 'i_agree'):
-    MAX_KEYS = 250
-
- 
-if args.nkeys < 1 or args.nkeys > MAX_KEYS:
+if args.nkeys < 1:
     raise argparse.ArgumentTypeError(
         "Number of keys out of range (between 1 and " + str(MAX_KEYS) + ")")
 
@@ -104,9 +93,8 @@ if args.yaml:
     yaml.write('  keys:\n')
 
 
-keyfile = open(OUTPUT_FOLDER + prefix + '_keyfile', 'wb')
-
-keyfile.write(struct.pack("B", args.nkeys))
+keyfile = open('../keyfile.h', 'w')
+keyfile.write(f"\n#pragma once\n// start of generated file\n\n");
 
 devices = open(OUTPUT_FOLDER + prefix + '_devices.json', 'w')
 devices.write('[\n')
@@ -115,21 +103,20 @@ fname = '%s.keys' % (prefix)
 keys = open(OUTPUT_FOLDER + fname, 'w')
 
 
-isV3 = sys.version_info.major > 2
-print('Using python3' if isV3 else 'Using python2')
 print(f'Output will be written to {OUTPUT_FOLDER}')
 additionalKeys = []
 i = 0
+
+keyfile.write(f"const uint32_t nKeys = {args.nkeys};\n")
+keyfile.write("const char public_key[][28] = {\n")
+
 while i < args.nkeys:
     priv = random.getrandbits(224)
     adv = ec.derive_private_key(priv, ec.SECP224R1(
     ), default_backend()).public_key().public_numbers().x
-    if isV3:
-        priv_bytes = priv.to_bytes(28, 'big')
-        adv_bytes = adv.to_bytes(28, 'big')
-    else:
-        priv_bytes = int_to_bytes(priv, 28)
-        adv_bytes = int_to_bytes(adv, 28)
+    priv_bytes = priv.to_bytes(28, 'big')
+    adv_bytes = adv.to_bytes(28, 'big')
+
 
     priv_b64 = base64.b64encode(priv_bytes).decode("ascii")
     adv_b64 = base64.b64encode(adv_bytes).decode("ascii")
@@ -142,7 +129,8 @@ while i < args.nkeys:
     else:
         i += 1
 
-    keyfile.write(base64.b64decode(adv_b64))
+    keyfile.write(to_C_byte_array(adv_bytes))
+    keyfile.write(",\n")
 
     if i < args.nkeys:
         additionalKeys.append(priv_b64)  # The last one is the leading one
@@ -162,6 +150,8 @@ while i < args.nkeys:
         keys.write('Hashed adv key: %s\n' % s256_b64)
         if args.yaml:
             yaml.write('    - "%s"\n' % adv_b64)
+
+keyfile.write("};\n// end of generated file");
 
 addKeysS = ''
 if (len(additionalKeys) > 0):

@@ -1,8 +1,8 @@
 /nrf-sdk
-/release
-/venv
-/output
+release/
+venv/
+output/
 
 ram.bin
 _build/
-
+keyfile.h

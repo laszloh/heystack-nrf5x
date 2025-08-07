@@ -62,14 +62,9 @@
 #endif
 #endif
 
-// Create space for MAX_KEYS public keys
-static const char public_key[MAX_KEYS+1][28] = {
-    [0] = "OFFLINEFINDINGPUBLICKEYHERE!",
-    [MAX_KEYS] = "ENDOFKEYSENDOFKEYSENDOFKEYS!",
-};
+#include "keyfile.h"
 
-int last_filled_index = -1;
-int current_index = 0;
+uint32_t current_index = 0;
 
 // Define timer ID variable
 APP_TIMER_DEF(m_key_change_timer_id);
@@ -183,13 +178,13 @@ void set_and_advertise_next_key(void *p_context)
 {
     #if defined(RANDOM_ROTATE_KEYS) && RANDOM_ROTATE_KEYS == 1
         // Update key index for next advertisement...Back to zero if out of range
-        current_index =  randmod(last_filled_index + 1);
+        current_index =  randmod(nKeys);
     #else
         // rotate to next key in the list modulo the last filled index
-        current_index = (current_index + 1) % (last_filled_index + 1);
+        current_index = (current_index + 1) % nKeys;
     #endif
 
-    if (current_index < 0 || current_index > last_filled_index) {
+    if (current_index >= nKeys) {
         COMPAT_NRF_LOG_INFO("Invalid key index: %d", current_index);
         current_index = 0;
     }
@@ -356,25 +351,16 @@ int main(void)
         es_battery_voltage_init();
     #endif
 
-    // Find the last filled index
-    for (int i = MAX_KEYS - 2; i >= 0; i--)
-    {
-        if (strlen(public_key[i]) > 0)
-        {
-            last_filled_index = i;
-            break;
-        }
-    }
 
     // Precompute necessary values using integer arithmetic
-    uint32_t rotation_interval_sec = last_filled_index * KEY_ROTATION_INTERVAL;
+    uint32_t rotation_interval_sec = nKeys * KEY_ROTATION_INTERVAL;
     // Calculate hours scaled by 100 to preserve two decimal places
     uint32_t rotation_interval_hours_scaled = (rotation_interval_sec * 100) / 3600;
     // Calculate rotations per day scaled by 100
     uint32_t rotation_per_day_scaled = (86400 * 100) / rotation_interval_sec;
 
     // Log the information
-    COMPAT_NRF_LOG_INFO("[KEYS] Last filled index: %d", last_filled_index);
+    COMPAT_NRF_LOG_INFO("[KEYS] Last filled index: %d", nKeys);
 
     COMPAT_NRF_LOG_INFO("[TIMING] Full key rotation interval: %d seconds (%d.%02d hours)",
                     rotation_interval_sec,
@@ -390,7 +376,7 @@ int main(void)
     timers_init();
 
     // Configure the timer for key rotation if there are multiple keys
-    if (last_filled_index > 0)
+    if (nKeys > 0)
     {
         timer_config();
     }
