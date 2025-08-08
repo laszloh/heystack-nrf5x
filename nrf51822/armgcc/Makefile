@@ -1,5 +1,5 @@
 PROJECT_NAME     := ble_app_haystack_$(SOFTDEVICE_MODEL)
-TARGETS          := nrf51822_xxaa nrf51822_xxac nrf51822_xxac-dcdc
+TARGETS          := nrf51822_xxaa nrf51822_xxaa-dcdc nrf51822_xxac nrf51822_xxac-dcdc
 OUTPUT_DIRECTORY := _build
 
 NRF_ROOT := ../..
@@ -11,10 +11,14 @@ SOFTDEVICE_MODEL := s130
 SOFTDEVICE_FLAGS := -DS130
 SOFTDEVICE_VERSION := 2.0.1
 
-$(OUTPUT_DIRECTORY)/nrf51822_xxac.out: \
+$(OUTPUT_DIRECTORY)/nrf51822_xxaa.out: \
   LINKER_SCRIPT  := ble_app_haystack_gcc_nrf51.ld
 
-$(OUTPUT_DIRECTORY)/nrf51822_xxaa.out: \
+
+$(OUTPUT_DIRECTORY)/nrf51822_xxaa-dcdc.out: \
+  LINKER_SCRIPT  := ble_app_haystack_gcc_nrf51.ld
+
+$(OUTPUT_DIRECTORY)/nrf51822_xxac.out: \
   LINKER_SCRIPT  := ble_app_haystack_gcc_nrf51.ld
 
 $(OUTPUT_DIRECTORY)/nrf51822_xxac-dcdc.out: \
@@ -212,6 +216,9 @@ default: nrf51822_xxac
 
 nrf51822_xxac-dcdc: CFLAGS += -DHAS_DCDC=1 -DPOWER_CONFIG_DEFAULT_DCDCEN=1
 nrf51822_xxac-dcdc: ASMFLAGS += -DHAS_DCDC=1 -DPOWER_CONFIG_DEFAULT_DCDCEN=1
+
+nrf51822_xxaa-dcdc: CFLAGS += -DHAS_DCDC=1 -DPOWER_CONFIG_DEFAULT_DCDCEN=1
+nrf51822_xxaa-dcdc: ASMFLAGS += -DHAS_DCDC=1 -DPOWER_CONFIG_DEFAULT_DCDCEN=1
 
 # Print all targets that can be built
 help: help-msg
