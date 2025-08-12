@@ -54,9 +54,6 @@ endif
 CFLAGS += -DCUSTOM_BOARD_INC=$(BOARD) -DBOARD_CUSTOM
 ASMFLAGS += -DCUSTOM_BOARD_INC=$(BOARD) -DBOARD_CUSTOM
 
-CFLAGS += -Wno-error=array-bounds
-ASMFLAGS += -Wno-error=array-bounds
-
 define merge_target
 merge_$(1): $(1)
 	@echo merging application and softdevice... : $(1)
