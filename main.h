@@ -1,5 +1,8 @@
+#pragma once
+
 #include "nrf5x-compat.h"
 #include "ble_stack.h"
+#include "lis2dh12.h"
 
 #ifndef RANDOM_ROTATE_KEYS
 #define RANDOM_ROTATE_KEYS 1
