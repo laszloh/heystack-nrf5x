@@ -1,6 +1,4 @@
 
-#include <stdint.h>
-
 #include "lis2dh12.h"
 #include "lis2dh12_reg.h"
 

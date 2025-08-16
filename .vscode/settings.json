@@ -1,6 +1,18 @@
 {
     "files.associations": {
         "boards.h": "c",
-        "cstdlib": "c"
-    }
+        "cstdlib": "c",
+        "stdint.h": "c",
+        "stddef.h": "c",
+        "nrf_drv_spi.h": "c",
+        "lis2dh12.h": "c"
+    },
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/sdk/nRF5_SDK_12.3.0_d7731ad/**",
+    ],
+    "C_Cpp.default.compilerPath": "${workspaceFolder}/nrf-sdk/gcc-arm-none-eabi/bin/arm-none-eabi-gcc",
+    "C_Cpp.default.defines": [
+        "__STATIC_INLINE=\"\""
+    ]
 }
