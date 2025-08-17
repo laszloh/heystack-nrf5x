@@ -1,11 +1,11 @@
 #pragma once
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 bool accelerometer_init(void);
 
-typedef struct{
+typedef struct {
     uint16_t x;
     uint16_t y;
     uint16_t z;

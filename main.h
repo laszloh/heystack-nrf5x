@@ -1,4 +1,5 @@
 #pragma once
+// clang-format off
 
 #include "nrf5x-compat.h"
 #include "ble_stack.h"

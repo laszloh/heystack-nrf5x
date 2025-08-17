@@ -5,11 +5,11 @@
 
 #include "app_error.h"
 #include "ble.h"
+#include "ble_advdata.h"
+#include "ble_conn_params.h"
 #include "ble_err.h"
 #include "ble_hci.h"
 #include "ble_srv_common.h"
-#include "ble_advdata.h"
-#include "ble_conn_params.h"
 
 #include "nrf5x-compat.h"
 
@@ -21,24 +21,24 @@
 #endif
 
 #if defined(NRF_SD_BLE_API_VERSION) && NRF_SD_BLE_API_VERSION > 3
-#include "nrf_sdh.h"
-#include "nrf_sdh_ble.h"
+#include "ble_lbs.h"
 #include "nrf_ble_gatt.h"
 #include "nrf_ble_qwr.h"
 #include "nrf_pwr_mgmt.h"
-#include "ble_lbs.h"
-#endif 
+#include "nrf_sdh.h"
+#include "nrf_sdh_ble.h"
+#endif
 
-#include "boards.h"
-#include "app_timer.h"
 #include "app_button.h"
+#include "app_timer.h"
+#include "boards.h"
 
-#define APP_BLE_CONN_CFG_TAG            1                                       /**< A tag identifying the SoftDevice BLE configuration. */
+#define APP_BLE_CONN_CFG_TAG 1 /**< A tag identifying the SoftDevice BLE configuration. */
 
-#define STATUS_FLAG_BATTERY_MASK           0b11000000
-#define STATUS_FLAG_COUNTER_MASK           0b00111111
-#define STATUS_FLAG_MEDIUM_BATTERY         0b01000000
-#define STATUS_FLAG_LOW_BATTERY            0b10000000
+#define STATUS_FLAG_BATTERY_MASK 0b11000000
+#define STATUS_FLAG_COUNTER_MASK 0b00111111
+#define STATUS_FLAG_MEDIUM_BATTERY 0b01000000
+#define STATUS_FLAG_LOW_BATTERY 0b10000000
 #define STATUS_FLAG_CRITICALLY_LOW_BATTERY 0b11000000
 
 #ifndef ADVERTISING_INTERVAL

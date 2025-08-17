@@ -5,7 +5,12 @@
         "stdint.h": "c",
         "stddef.h": "c",
         "nrf_drv_spi.h": "c",
-        "lis2dh12.h": "c"
+        "lis2dh12.h": "c",
+        "nrf_drv_gpiote.h": "c",
+        "sdk_errors.h": "c",
+        "nrf_gpio.h": "c",
+        "nrf_gpiote.h": "c",
+        "lis2dh12_reg.h": "c"
     },
     "C_Cpp.default.includePath": [
         "${workspaceFolder}/**",
