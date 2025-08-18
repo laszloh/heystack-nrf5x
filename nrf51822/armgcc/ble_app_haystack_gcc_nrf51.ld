@@ -23,6 +23,7 @@ SECTIONS
     KEEP(*(.pwr_mgmt_data))
     PROVIDE(__stop_pwr_mgmt_data = .);
   } > RAM
+  .ramRetetion 0x20002000 : {KEEP(*(.ramRetetion))}
 } INSERT AFTER .data;
 
 INCLUDE "nrf5x_common.ld"

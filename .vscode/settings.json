@@ -10,7 +10,10 @@
         "sdk_errors.h": "c",
         "nrf_gpio.h": "c",
         "nrf_gpiote.h": "c",
-        "lis2dh12_reg.h": "c"
+        "lis2dh12_reg.h": "c",
+        "arduino_primo.h": "c",
+        "nordic_common.h": "c",
+        "keyfile.h": "c"
     },
     "C_Cpp.default.includePath": [
         "${workspaceFolder}/**",
@@ -18,6 +21,23 @@
     ],
     "C_Cpp.default.compilerPath": "${workspaceFolder}/nrf-sdk/gcc-arm-none-eabi/bin/arm-none-eabi-gcc",
     "C_Cpp.default.defines": [
-        "__STATIC_INLINE=\"\""
+        "__STATIC_INLINE=\"\"",
+        "BOARD_CUSTOM",
+        "CUSTOM_BOARD_INC=yj16009_board",
+        "BATTERY_LEVEL",
+        "MAX_KEYS=2000",
+        "RANDOM_ROTATE_KEYS",
+        "HAS_DCDC",
+        "POWER_CONFIG_DEFAULT_DCDCEN",
+        "ADC_ENABLED",
+        "KEY_ROTATION_INTERVAL=300",
+        "ADVERTISING_INTERVAL=2000",
+        "SWI_DISABLE0",
+        "SOFTDEVICE_PRESENT",
+        "s130",
+        "NRF51",
+        "NRF51288",
+        "BLE_STACK_SUPPORT_REQD",
+        "NRF_SD_BLE_API_VERSION=2"
     ]
 }

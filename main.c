@@ -23,7 +23,15 @@
 
 #include "keyfile.h"
 
-uint32_t current_index = 0;
+#define RAM_MEMORY_VALIDITY_WORD    (0xFEEDBEEFUL)
+#define RESET_MEMORY_TEST_BYTE      (0xAF)
+
+typedef struct {
+    uint32_t current_index;
+} retetion_t;
+
+#define DATA_T retetion_t
+#include "ram_retetion.h"
 
 // Define timer ID variable
 APP_TIMER_DEF(m_key_change_timer_id);
