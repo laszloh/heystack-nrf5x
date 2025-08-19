@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -12,3 +16,8 @@ typedef struct {
 } data_t;
 
 data_t accelerometer_read();
+
+
+#ifdef __cplusplus
+}
+#endif

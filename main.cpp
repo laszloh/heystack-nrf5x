@@ -15,7 +15,13 @@
 
 #if defined(BATTERY_LEVEL) && BATTERY_LEVEL == 1
 #if NRF_SDK_VERSION < 15
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "libraries/eddystone/es_battery_voltage.h"
+#ifdef __cplusplus
+}
+#endif
 #else
 #include "ble/ble_services/eddystone/es_battery_voltage.h"
 #endif
@@ -23,15 +29,14 @@
 
 #include "keyfile.h"
 
-#define RAM_MEMORY_VALIDITY_WORD    (0xFEEDBEEFUL)
-#define RESET_MEMORY_TEST_BYTE      (0xAF)
+#include "ram_retetion.hpp"
 
-typedef struct {
+struct Data {
     uint32_t current_index;
-} retetion_t;
+};
+RamRetetion<Data> ramData __attribute__((section(".ram_retetion")));
 
-#define DATA_T retetion_t
-#include "ram_retetion.h"
+#define RESET_MEMORY_TEST_BYTE (0xAF)
 
 // Define timer ID variable
 APP_TIMER_DEF(m_key_change_timer_id);
@@ -43,29 +48,21 @@ APP_TIMER_DEF(m_key_change_timer_id);
 #include "nrf_drv_rng.h"
 #include "nrf_rng.h"
 
-int randmod(int mod) {
-    if(mod <= 0) {
-        return -1; // Invalid modulus.
-    }
-
+uint32_t randmod(uint32_t mod) {
     uint8_t buffer[4]; // Buffer to hold 2 random bytes (16 bits).
     uint32_t x;
     const uint32_t R_MAX = (UINT32_MAX / mod) * mod;
 
-    uint8_t bytes_available = 0;
-    uint32_t err_code;
-
     // Wait until there are enough random bytes available (at least 4 bytes).
+    uint8_t bytes_available = 0;
     do {
-        err_code = sd_rand_application_bytes_available_get(&bytes_available);
-        APP_ERROR_CHECK(err_code);
+        APP_ERROR_CHECK(sd_rand_application_bytes_available_get(&bytes_available));
     } while(bytes_available < sizeof(buffer));
 
     do {
-        // Get 4 random bytes and combine them into a 16-bit number.
-        err_code = sd_rand_application_vector_get(buffer, sizeof(buffer));
-        APP_ERROR_CHECK(err_code);
-        // Combine the two bytes into a 32-bit integer.
+        // Get 4 random bytes and combine them into a 32-bit number.
+        APP_ERROR_CHECK(sd_rand_application_vector_get(buffer, sizeof(buffer)));
+        // Combine the 4 bytes into a 32-bit integer.
         x = (buffer[0] << 24) | (buffer[1] << 16) | (buffer[2] << 8) | buffer[3];
     } while(x >= R_MAX); // Discard if the number is out of the acceptable range.
 
@@ -139,17 +136,18 @@ void update_battery_level(void) {
 #endif
 
 void set_and_advertise_next_key(void *p_context) {
+    Data &d = ramData.get();
 #if defined(RANDOM_ROTATE_KEYS) && RANDOM_ROTATE_KEYS == 1
     // Update key index for next advertisement...Back to zero if out of range
-    current_index = randmod(nKeys);
+    d.current_index = randmod(nKeys);
 #else
     // rotate to next key in the list modulo the last filled index
-    current_index = (current_index + 1) % nKeys;
+    d.current_index = (d.current_index + 1) % nKeys;
 #endif
 
-    if(current_index >= nKeys) {
-        COMPAT_NRF_LOG_INFO("Invalid key index: %d", current_index);
-        current_index = 0;
+    if(d.current_index >= nKeys) {
+        COMPAT_NRF_LOG_INFO("Invalid key index: %d", d.current_index);
+        d.current_index = 0;
     }
 
 #if defined(BATTERY_LEVEL) && BATTERY_LEVEL == 1
@@ -157,8 +155,10 @@ void set_and_advertise_next_key(void *p_context) {
 #endif
 
     // Set key to be advertised
-    ble_set_advertisement_key(public_key[current_index]);
-    COMPAT_NRF_LOG_INFO("Rotating key: %d", current_index);
+    ble_set_advertisement_key(public_key[d.current_index]);
+    COMPAT_NRF_LOG_INFO("Rotating key: %d", d.current_index);
+
+    ramData.recompute();
 }
 
 /**@brief Function for assert macro callback.
@@ -303,13 +303,12 @@ int main(void) {
     es_battery_voltage_init();
 #endif
 
-
     // Precompute necessary values using integer arithmetic
-    uint32_t rotation_interval_sec = nKeys * KEY_ROTATION_INTERVAL;
+    constexpr uint32_t rotation_interval_sec = nKeys * KEY_ROTATION_INTERVAL;
     // Calculate hours scaled by 100 to preserve two decimal places
-    uint32_t rotation_interval_hours_scaled = (rotation_interval_sec * 100) / 3600;
+    constexpr uint32_t rotation_interval_hours_scaled = (rotation_interval_sec * 100) / 3600;
     // Calculate rotations per day scaled by 100
-    uint32_t rotation_per_day_scaled = (86400 * 100) / rotation_interval_sec;
+    constexpr uint32_t rotation_per_day_scaled = (86400 * 100) / rotation_interval_sec;
 
     // Log the information
     COMPAT_NRF_LOG_INFO("[KEYS] Last filled index: %d", nKeys);
@@ -319,6 +318,10 @@ int main(void) {
 
     COMPAT_NRF_LOG_INFO("[TIMING] Rotation per Day: %d.%02d", rotation_per_day_scaled / 100, rotation_per_day_scaled % 100);
 
+    // check if the RAM data is still valid
+    if(NRF_POWER->GPREGRET != RESET_MEMORY_TEST_BYTE || !ramData.validate()) {
+        // we had a power reset,
+    }
 
     // Initialize the timer module.
     timers_init();

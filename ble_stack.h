@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <string.h>
 
@@ -49,3 +53,7 @@ void ble_advertising_init(void);
 void ble_set_max_tx_power(void);
 void set_battery(uint8_t battery_level);
 uint8_t ble_set_advertisement_key(const char *key);
+
+#ifdef __cplusplus
+}
+#endif

@@ -13,7 +13,9 @@
         "lis2dh12_reg.h": "c",
         "arduino_primo.h": "c",
         "nordic_common.h": "c",
-        "keyfile.h": "c"
+        "keyfile.h": "c",
+        "cstdint": "cpp",
+        "bsp.h": "c"
     },
     "C_Cpp.default.includePath": [
         "${workspaceFolder}/**",
