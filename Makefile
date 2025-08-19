@@ -11,8 +11,9 @@ GNU_INSTALL_ROOT ?= $(CURDIR)/nrf-sdk/gcc-arm-none-eabi/
 
 
 TARGETS := \
-	nrf51822_xxac \
 	nrf51822_xxaa \
+	nrf51822_xxaa-dcdc \
+	nrf51822_xxac \
 	nrf51822_xxac-dcdc \
 	nrf52810_xxaa \
 	nrf52810_xxaa-dcdc \
